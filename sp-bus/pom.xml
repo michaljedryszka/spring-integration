@@ -18,25 +18,25 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-http</artifactId>
-			<version>4.1.0.RC1</version>
+			<version>4.1.0.RELEASE</version>
 		</dependency>
 	</dependencies>
 	<build>
 		<pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<warName>sp-bus</warName>
-					<archive>
-						<manifestEntries>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<warName>sp-bus</warName>
+						<archive>
+							<manifestEntries>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+			</plugins>
 		</pluginManagement>
 	</build>
 </project>

@@ -23,20 +23,22 @@
 		default-request-channel="requestChannel" />
 
 	<int:channel id="requestChannel" />
+	
+	<int:channel id="responseChannel" />
+	
+	<int:logging-channel-adapter channel="responseChannel" log-full-message="true" level="INFO"/>
 
 	<int-http:outbound-gateway request-channel="requestChannel"
 		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST"
-		expected-response-type="java.lang.String" />
-
+	 	reply-channel="responseChannel"/>
+ 
 	<aop:config>
 		<aop:advisor advice-ref="requestInterceptor" pointcut="execution(* com.cybercom.pl.spint.request.RequestService.hello(..))"/>
 	</aop:config>
 
 	<int:publishing-interceptor id="requestInterceptor"
 		default-channel="requestChannel">
-		<int:method pattern="echo" payload="'ri: ' + #return">
-			<int:header name="foo" value="bar" />
-		</int:method>
+		<int:method pattern="hello" payload="'ri: ' + #return"/>
 	</int:publishing-interceptor>
 
 </beans>
