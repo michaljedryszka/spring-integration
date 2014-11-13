@@ -10,8 +10,7 @@
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-http="http://www.springframework.org/schema/integration/http"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:aop="http://www.springframework.org/schema/aop">
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop">
 
 
 	<context:component-scan base-package="com.cybercom.pl.spint.request" />
@@ -19,26 +18,35 @@
 
 	<bean id="requestService" class="com.cybercom.pl.spint.request.RequestService" />
 
-	<int:gateway id="requestGateway" service-interface="com.cybercom.pl.spint.bus.RequestGateway"
-		default-request-channel="requestChannel" />
-
 	<int:channel id="requestChannel" />
-	
+
+<!-- use of int:publishing-interceptor -->
+<!-- 
 	<int:channel id="responseChannel" />
-	
-	<int:logging-channel-adapter channel="responseChannel" log-full-message="true" level="INFO"/>
+
+	<int:logging-channel-adapter channel="responseChannel"
+		log-full-message="true" level="INFO" />
 
 	<int-http:outbound-gateway request-channel="requestChannel"
 		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST"
-	 	reply-channel="responseChannel"/>
- 
+		reply-channel="responseChannel" />
+
 	<aop:config>
-		<aop:advisor advice-ref="requestInterceptor" pointcut="execution(* com.cybercom.pl.spint.request.RequestService.hello(..))"/>
+		<aop:advisor advice-ref="requestInterceptor"
+			pointcut="execution(* com.cybercom.pl.spint.request.RequestService.hello(..))" />
 	</aop:config>
 
 	<int:publishing-interceptor id="requestInterceptor"
 		default-channel="requestChannel">
-		<int:method pattern="hello" payload="'ri: ' + #return"/>
+		<int:method pattern="hello" payload="'ri: ' + #return" />
 	</int:publishing-interceptor>
-
+ -->
+<!-- use of request gateway (no response channel definition but AfterHelloPublisher.java is required)-->
+	<int:gateway id="requestGateway" service-interface="com.cybercom.pl.spint.bus.RequestGateway"
+		default-request-channel="requestChannel" />
+		
+	<int-http:outbound-gateway request-channel="requestChannel"
+		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST" expected-response-type="java.lang.String"/>
+		
+	<bean name="afterHelloPublisherBean" class="com.cybercom.pl.spint.bus.AfterHelloPublisher"/>
 </beans>
