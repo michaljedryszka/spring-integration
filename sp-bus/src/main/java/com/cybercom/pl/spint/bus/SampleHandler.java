@@ -6,12 +6,22 @@ import org.slf4j.LoggerFactory;
 public class SampleHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SampleHandler.class);
-			
-	public String handle(String data){
+
+	public SIMessage handle(SIMessage requestMessage){
+		String data = requestMessage.getPayload();
 		data = "[bus: " + data + "]";
 		if(logger.isInfoEnabled()){
 			logger.info("Handle data: {}", data);
 		}
-		return data;
+		requestMessage.setPayload(data);
+		return requestMessage;
 	}
+	/*
+	public String handle(String requestMessage){
+		if(logger.isInfoEnabled()){
+			logger.info("Handle data string: {}", requestMessage);
+		}
+		return requestMessage;
+	}
+	*/
 }

@@ -18,30 +18,40 @@
 
 	<bean id="requestService" class="com.cybercom.pl.spint.request.RequestService" />
 
+	<bean id="siTransformerBean" class="com.cybercom.pl.spint.bus.SIMessageTransformer"/>	
+
 	<int:channel id="requestChannel" />
+	<int:channel id="requestChannelTransformed" />
+	<int:channel id="requestChannelTransformedJSON" />
+	
+	<int:transformer id="siMessageTransformer" ref="siTransformerBean" input-channel="requestChannel"
+             method="transform" output-channel="requestChannelTransformed"/>
+             
+	<int:object-to-json-transformer input-channel="requestChannelTransformed" output-channel="requestChannelTransformedJSON"/>
 
 <!-- use of int:publishing-interceptor -->
-<!-- 
 	<int:channel id="responseChannel" />
 
 	<int:logging-channel-adapter channel="responseChannel"
 		log-full-message="true" level="INFO" />
 
-	<int-http:outbound-gateway request-channel="requestChannel"
+	<int-http:outbound-gateway request-channel="requestChannelTransformedJSON"
 		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST"
 		reply-channel="responseChannel" />
 
 	<aop:config>
-		<aop:advisor advice-ref="requestInterceptor"
+		<aop:advisor advice-ref="helloRequestInterceptor"
 			pointcut="execution(* com.cybercom.pl.spint.request.RequestService.hello(..))" />
 	</aop:config>
 
-	<int:publishing-interceptor id="requestInterceptor"
+	<int:publishing-interceptor id="helloRequestInterceptor"
 		default-channel="requestChannel">
-		<int:method pattern="hello" payload="'ri: ' + #return" />
+		<int:method pattern="hello" payload="#return" />
 	</int:publishing-interceptor>
- -->
 <!-- use of request gateway (no response channel definition but AfterHelloPublisher.java is required)-->
+<!-- 
+	<aop:aspectj-autoproxy />
+	
 	<int:gateway id="requestGateway" service-interface="com.cybercom.pl.spint.bus.RequestGateway"
 		default-request-channel="requestChannel" />
 		
@@ -49,4 +59,5 @@
 		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST" expected-response-type="java.lang.String"/>
 		
 	<bean name="afterHelloPublisherBean" class="com.cybercom.pl.spint.bus.AfterHelloPublisher"/>
+ -->
 </beans>

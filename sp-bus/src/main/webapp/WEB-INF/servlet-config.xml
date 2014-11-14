@@ -10,12 +10,13 @@
 	<int-http:inbound-gateway request-channel="receiveChannel"
                           path="/receiveGateway"
                           supported-methods="POST"/>
-
-	<int:channel id="receiveChannel"/>
+                          
+	<int:json-to-object-transformer input-channel="receiveChannel" output-channel="receiveChannelDes"/>
+                          
 
 	<bean id="sampleHandler" class="com.cybercom.pl.spint.bus.SampleHandler"></bean>
 	
-	<int:service-activator input-channel="receiveChannel" ref="sampleHandler" method="handle" />
+	<int:service-activator input-channel="receiveChannelDes" ref="sampleHandler" method="handle"/>
 <!--
 <int:service-activator input-channel="receiveChannel" expression="payload + ' from the other side'"/>
 -->	
