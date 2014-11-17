@@ -18,23 +18,25 @@
 
 	<bean id="requestService" class="com.cybercom.pl.spint.request.RequestService" />
 
-<!-- flow definition -->
+	<!-- flow definition -->
 	<int:channel id="requestChannel" />
 	<int:channel id="responseChannel" />
 
 	<int:logging-channel-adapter channel="responseChannel"
 		log-full-message="true" level="INFO" />
+
+	<bean id="siTransformerBean" class="com.cybercom.pl.spint.bus.SIMessageTransformer" />
 	
-	<bean id="siTransformerBean" class="com.cybercom.pl.spint.bus.SIMessageTransformer"/>	
-             
 	<int:chain input-channel="requestChannel" output-channel="responseChannel">
 		<int:transformer id="siMessageTransformer" ref="siTransformerBean"
-	             method="transform" />
+			method="transform" />
 		<int:object-to-json-transformer />
-		<int-http:outbound-gateway url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST"/>
-	</int:chain>	
+		<int-http:outbound-gateway 
+			url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST"
+			mapped-request-headers="json__TypeId__"/>
+	</int:chain>
 
-<!-- use of int:publishing-interceptor -->
+	<!-- use of int:publishing-interceptor -->
 	<aop:config>
 		<aop:advisor advice-ref="helloRequestInterceptor"
 			pointcut="execution(* com.cybercom.pl.spint.request.RequestService.hello(..))" />
@@ -44,16 +46,10 @@
 		default-channel="requestChannel">
 		<int:method pattern="hello" payload="#return" />
 	</int:publishing-interceptor>
-<!-- use of request gateway (no response channel definition but AfterHelloPublisher.java is required)-->
-<!-- 
-	<aop:aspectj-autoproxy />
-	
-	<int:gateway id="requestGateway" service-interface="com.cybercom.pl.spint.bus.RequestGateway"
-		default-request-channel="requestChannel" />
-		
-	<int-http:outbound-gateway request-channel="requestChannel"
-		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST" expected-response-type="java.lang.String"/>
-		
-	<bean name="afterHelloPublisherBean" class="com.cybercom.pl.spint.bus.AfterHelloPublisher"/>
- -->
+	<!-- use of request gateway (no response channel definition but AfterHelloPublisher.java 
+		is required) -->
+	<!-- <aop:aspectj-autoproxy /> <int:gateway id="requestGateway" service-interface="com.cybercom.pl.spint.bus.RequestGateway" 
+		default-request-channel="requestChannel" /> <int-http:outbound-gateway request-channel="requestChannel" 
+		url="http://localhost:8080/sp-bus/receiveGateway" http-method="POST" expected-response-type="java.lang.String"/> 
+		<bean name="afterHelloPublisherBean" class="com.cybercom.pl.spint.bus.AfterHelloPublisher"/> -->
 </beans>

@@ -8,16 +8,19 @@
 	xmlns:int-http="http://www.springframework.org/schema/integration/http">
 
 	<int-http:inbound-gateway request-channel="receiveChannel"
-                          path="/receiveGateway"
-                          supported-methods="POST"/>
-                          
-	<int:json-to-object-transformer input-channel="receiveChannel" output-channel="receiveChannelDes"/>
-                          
+		path="/receiveGateway" supported-methods="POST"
+		mapped-request-headers="x-json__TypeId__"/>
 
 	<bean id="sampleHandler" class="com.cybercom.pl.spint.bus.SampleHandler"></bean>
-	
-	<int:service-activator input-channel="receiveChannelDes" ref="sampleHandler" method="handle"/>
-<!--
-<int:service-activator input-channel="receiveChannel" expression="payload + ' from the other side'"/>
--->	
+
+	<int:chain input-channel="receiveChannel">
+		<int:header-enricher>
+			<int:header name="json__TypeId__" expression="headers['x-json__typeid__']" />
+		</int:header-enricher>
+		<int:json-to-object-transformer />
+		<int:service-activator ref="sampleHandler"
+			method="handle" />
+	</int:chain>
+	<!-- <int:service-activator input-channel="receiveChannel" expression="payload 
+		+ ' from the other side'"/> -->
 </beans>
